@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ocean Bliss Hotel</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Remixicon CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet"/>
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* Base styles and utility overrides */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            color: #374151; /* Default text color */
+        }
+
+        .section__container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 4rem 1rem;
+        }
+
+        .header {
+            background-image: url('https://placehold.co/1920x800/6366f1/ffffff?text=Hotel+Header+Background'); /* Placeholder image */
+            background-size: cover;
+            background-position: center center;
+            height: 600px; /* Adjust height as needed */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%);
+            z-index: 1;
+        }
+
+        .header > * {
+            position: relative;
+            z-index: 2;
+        }
+
+
+        .nav__bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 1rem;
+            max-width: 1200px;
+            margin: auto;
+            width: 100%;
+        }
+        .logo img {
+            height: 50px; /* Adjust logo size */
+            filter: brightness(0) invert(1); /* Makes a dark logo white for header */
+        }
+        .nav__links {
+            display: none; /* Hidden by default for mobile */
+            flex-direction: column;
+            width: 100%;
+            background-color: rgba(67, 56, 202, 0.9); /* Indigo-700 with opacity */
+            position: absolute;
+            top: 100%;
+            left: 0;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        .nav__links.open {
+            display: flex;
+        }
+        .nav__links li {
+            margin: 0.5rem 0;
+        }
+        .nav__links a {
+            color: white;
+            padding: 0.5rem 1rem;
+            display: block;
+            transition: color 0.2s;
+        }
+        .nav__links a:hover {
+            color: #a78bfa; /* Indigo-300 */
+        }
+        .nav__menu__btn {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: white;
+        }
+        .btn {
+            background-color: #4338ca; /* Indigo-700 */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px; /* Fully rounded */
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn:hover {
+            background-color: #3730a3; /* Indigo-800 */
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .nav__btn {
+            display: none; /* Hidden on small screens */
+        }
+
+        @media (min-width: 768px) {
+            .nav__links {
+                display: flex;
+                flex-direction: row;
+                position: static;
+                background-color: transparent;
+                width: auto;
+            }
+            .nav__menu__btn {
+                display: none;
+            }
+            .nav__btn {
+                display: inline-block;
+            }
+            .nav__bar {
+                padding: 1.5rem 2rem;
+            }
+        }
+
+        .header__container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-bottom: 8rem; /* Space for booking form */
+        }
+        .header__container h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: white;
+        }
+        .header__container h3 span {
+            color: #a78bfa; /* Indigo-300 */
+        }
+
+        /* Booking Form Styles */
+        .booking__container {
+            margin-top: -6rem; /* Overlap with header */
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+        .form-input {
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            width: 100%;
+            transition: all 0.15s ease-in-out;
+            background-color: #f9fafb;
+            color: #374151;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1; /* Indigo-500 */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); /* Indigo-500 with opacity */
+        }
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+
+        /* Section Subheader/Header */
+        .section__subheader {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6366f1; /* Indigo-500 */
+            text-align: center;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .section__header {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1f2937; /* Gray-800 */
+            text-align: center;
+            margin-bottom: 2.5rem;
+            line-height: 1.2;
+        }
+        .section__description {
+            font-size: 1rem;
+            color: #6b7280; /* Gray-500 */
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        /* About Section */
+        .about__container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3rem;
+            text-align: center;
+        }
+        @media (min-width: 768px) {
+            .about__container {
+                flex-direction: row;
+                text-align: left;
+            }
+            .about__image, .about__content {
+                flex: 1;
+            }
+            .about__content {
+                padding-left: 2rem;
+            }
+        }
+        .about__image img {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        /* Facilities Section */
+        #facilities {
+            padding: 4rem 1rem;
+            background: #f7f7f7;
+        }
+        #facilities h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #1f2937;
+            font-weight: 700;
+        }
+        #facilities .desc {
+            font-size: 0.95rem;
+            color: #555;
+            max-height: 90px; /* Controlled by JS */
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            margin-bottom: 10px; /* Space before button */
+        }
+        #facilities button {
+            margin-top: 0; /* Adjusted from user's inline style */
+            background: #4338ca; /* Indigo-700 */
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        #facilities button:hover {
+            background: #3730a3; /* Indigo-800 */
+        }
+        .facilities-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .facilities-card {
+            flex: 1 1 30%;
+            min-width: 280px;
+            max-width: 380px; /* Slightly increased max-width for better look */
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .facilities-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .facilities-card-content {
+            padding: 20px;
+            flex-grow: 1; /* Ensures content area fills remaining space */
+            display: flex;
+            flex-direction: column;
+        }
+        .facilities-card-content h2 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+
+        /* Accommodation (Room) Section */
+        #room {
+            padding: 4rem 1rem;
+            background: white; /* Changed background for contrast */
+        }
+        #room h2 {
+            text-align: center;
+            font-size: 2.5rem; /* Adjusted for consistency */
+            margin-bottom: 3rem;
+            color: #1f2937;
+            font-weight: 700;
+        }
+        .room__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .room__card {
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e5e7eb; /* Light border */
+        }
+        .room__card__image {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+        .room__card__image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .room__card:hover .room__card__image img {
+            transform: scale(1.05);
+        }
+        .room__card__icons {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            background: rgba(255,255,255,0.7);
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        .room__card__icons span {
+            padding: 6px;
+            border-radius: 50%;
+            color: #444;
+            font-size: 1.1rem;
+            background: transparent; /* Changed for better contrast */
+            transition: color 0.2s;
+        }
+        .room__card__icons span:hover {
+            color: #6366f1; /* Indigo-500 */
+        }
+        .room__card__details {
+            padding: 1.5rem;
+        }
+        .room__card__details h4 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+            font-weight: 600;
+        }
+        .room__card__details p {
+            font-size: 0.95rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        .room__card__details h5 {
+            font-size: 1rem;
+            color: #111;
+            margin-bottom: 1rem;
+        }
+        .room__card__details h5 span {
+            font-weight: 700;
+            color: #10b981; /* Green-500 */
+        }
+        .room__card__details button {
+            background-color: #10b981; /* Green-500 */
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 2rem;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .room__card__details button:hover {
+            background-color: #059669; /* Green-600 */
+            transform: translateY(-2px);
+        }
+
+        /* Amenities Section */
+        .service {
+            background-color: #1f2937; /* Dark background */
+            color: white;
+            padding: 4rem 1rem;
+        }
+        .service .section__subheader {
+            color: #a78bfa; /* Light indigo */
+        }
+        .service .section__header {
+            color: white;
+        }
+        .service__container {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+        @media (min-width: 768px) {
+            .service__container {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+            .service__content {
+                flex: 1;
+                padding-right: 2rem;
+            }
+        }
+        .service__list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .service__list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .service__list li {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.1rem;
+            color: #d1d5db; /* Light gray */
+        }
+        .service__list li span {
+            font-size: 1.5rem;
+            color: #6366f1; /* Indigo-500 */
+        }
+
+        /* Activities Section (reusing room__container/grid classes for consistent styling) */
+        #activities {
+             background-color: white; /* Changed background for contrast */
+        }
+
+        /* Banner Section (Counters) */
+        .banner__container {
+            background-image: url('https://placehold.co/1920x400/4f46e5/ffffff?text=Banner+Background'); /* Placeholder image */
+            background-size: cover;
+            background-position: center center;
+            padding: 4rem 1rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            z-index: 1; /* Ensure text is above overlay */
+        }
+        .banner__container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5); /* Dark overlay */
+            z-index: -1; /* Place behind content */
+        }
+        .banner__content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            justify-content: center;
+            align-items: center;
+        }
+        @media (min-width: 768px) {
+            .banner__content {
+                flex-direction: row;
+            }
+        }
+        .banner__card {
+            background-color: rgba(255,255,255,0.15); /* Slightly transparent white */
+            backdrop-filter: blur(5px);
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 250px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .banner__card h4 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        .banner__card p {
+            font-size: 1.1rem;
+            color: #e5e7eb;
+        }
+
+        /* Explore Section */
+        .explore {
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+        .explore__bg {
+            background-image: url('https://placehold.co/1200x500/1e40af/ffffff?text=New+Menu+Background'); /* Placeholder image */
+            background-size: cover;
+            background-position: center center;
+            border-radius: 1rem;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .explore__bg::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5); /* Dark overlay */
+        }
+        .explore__content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            max-width: 600px;
+            padding: 2rem;
+        }
+        .explore__content p {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: #d1d5db;
+        }
+        .explore__content h4 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        .explore__content .btn {
+            background-color: #6366f1; /* Indigo-500 */
+        }
+        .explore__content .btn:hover {
+            background-color: #4f46e5; /* Indigo-600 */
+        }
+
+        /* WhatsApp Float Button */
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 3px #999;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease-in-out;
+        }
+        .whatsapp-float img {
+            width: 35px;
+            height: 35px;
+            filter: brightness(0) invert(1); /* Make the icon white */
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+        }
+
+        /* Scroll to Top Button */
+        #myBtn {
+            display: none; /* Hidden by default */
+            position: fixed; /* Fixed/sticky position */
+            bottom: 120px; /* Place the button slightly above WhatsApp */
+            right: 40px; /* Place the button 30px from the right */
+            z-index: 99; /* Make sure it does not overlap */
+            border: none; /* Remove borders */
+            outline: none; /* Remove outline */
+            background-color: #6366f1; /* Set a background color */
+            color: white; /* Text color */
+            cursor: pointer; /* Add a mouse pointer on hover */
+            padding: 15px; /* Some padding */
+            border-radius: 50%; /* Rounded corners */
+            font-size: 18px; /* Increase font size */
+            box-shadow: 2px 2px 3px #999;
+            transition: background-color 0.3s, opacity 0.3s;
+        }
+
+        #myBtn:hover {
+            background-color: #4f46e5; /* Darker background on hover */
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #111827; /* Darker gray for footer */
+            color: white;
+            padding: 4rem 1rem;
+        }
+        .footer__container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+            text-align: center;
+        }
+        @media (min-width: 768px) {
+            .footer__container {
+                grid-template-columns: repeat(3, 1fr);
+                text-align: left;
+            }
+        }
+        .footer__col img {
+            filter: brightness(0) invert(1); /* Makes logo white */
+            height: 60px; /* Larger logo in footer */
+            margin-bottom: 1rem;
+        }
+        .footer__col .section__description {
+            color: #9ca3af;
+            margin-bottom: 2rem;
+        }
+        .footer__col h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        .footer__links li {
+            margin-bottom: 0.75rem;
+        }
+        .footer__links a {
+            color: #9ca3af;
+            transition: color 0.2s;
+        }
+        .footer__links a:hover {
+            color: white;
+        }
+        .footer__socials {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .footer__socials {
+                justify-content: flex-start;
+            }
+        }
+        .footer__socials img {
+            height: 30px; /* Social icon size */
+            filter: brightness(0) invert(1); /* Makes icons white */
+            transition: transform 0.2s;
+        }
+        .footer__socials img:hover {
+            transform: translateY(-3px);
+        }
+        .footer__bar {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #9ca3af;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Booking form specific styles */
+        .booking-form-section {
+            padding: 4rem 1rem;
+            background-color: #f9fafb;
+        }
+        .booking-form-section h2 {
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <header class="header">
+        <nav class="p-6">
+            <div class="nav__bar container mx-auto">
+                <div class="logo">
+                    <a href="#home"><img src="assets/logo.png" alt="logo" /></a>
+                </div>
+                <div class="nav__menu__btn" id="menu-btn">
+                    <i class="ri-menu-line"></i>
+                </div>
+                <ul class="nav__links" id="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#facilities">Facilities</a></li>
+                    <li><a href="#service">Amenities</a></li>
+                    <li><a href="#room">Accommodations</a></li>
+                    <li><a href="#activities">Activities</a></li>
+                    <li><a href="#explore">Explore</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <a href="#book-now">
+                    <button class="btn nav__btn">Book Now</button>
+                </a>
+            </div>
+        </nav>
+        <div class="section__container header__container" id="home">
+            <h3>Make Yourself At Home<br /> at<span> Ocean Bliss Hotel</span>.</h3>
+        </div>
+    </header>
+
+    <section class="section__container about__container" id="about">
+        <div class="about__image">
+            <img src="https://placehold.co/500x350/6366f1/ffffff?text=Hotel+Exterior" alt="about" />
+        </div>
+        <div class="about__content">
+            <p class="section__subheader">ABOUT US</p>
+            <h2 class="section__header text-left">The Best Holidays Start Here!</h2>
+            <p class="section__description text-left">
+                With a focus on quality accommodations, personalized experiences, and
+                seamless booking, our platform is dedicated to ensuring that every
+                traveler embarks on their dream holiday with confidence and
+                excitement.
+            </p>
+            <div class="about__btn">
+                <button class="btn">Read More</button>
+            </div>
+        </div>
+    </section>
+    
+    <section id="facilities" class="section__container">
+        <p class="section__subheader">Elevate Your Experience</p>
+        <h2 class="section__header">Premium Facilities for Your Comfort</h2>
+
+        <div class="facilities-grid">
+            <!-- Pool Card -->
+            <div class="facilities-card">
+                <img src="https://placehold.co/400x200/4f46e5/ffffff?text=Swimming+Pool" alt="Swimming Pool">
+                <div class="facilities-card-content">
+                    <h2 class="font-bold">Luxurious Pool</h2>
+                    <p class="desc">
+                        Step into serenity as you immerse yourself in our sparkling swimming pool, seamlessly blending with the endless horizon. Let the crystal-clear water embrace you, while the gentle ocean breeze carries whispers of relaxation.
+                        <span class="full-text" style="display: none;"> Whether you're seeking a refreshing dip, a leisurely swim, or simply a spot to bask in the sun, our pool area provides the perfect escape. Enjoy poolside service with refreshing drinks and light bites.</span>
+                    </p>
+                    <button onclick="toggleText(this)">Read More</button>
+                </div>
+            </div>
+
+            <!-- Restaurant Card -->
+            <div class="facilities-card">
+                <img src="https://placehold.co/400x200/4f46e5/ffffff?text=Restaurant" alt="Restaurant">
+                <div class="facilities-card-content">
+                    <h2 class="font-bold">Fine Dining</h2>
+                    <p class="desc">
+                        Indulge your senses in a culinary experience like no other. Our master chefs craft gourmet creations using only the finest locally sourced ingredients, bringing Zanzibar’s rich flavors to life.
+                        <span class="full-text" style="display: none;"> From vibrant breakfast buffets to exquisite à la carte dinners, every meal is a journey of taste. Our restaurant offers stunning views, creating an unforgettable dining ambiance for all occasions.</span>
+                    </p>
+                    <button onclick="toggleText(this)">Read More</button>
+                </div>
+            </div>
+
+            <!-- Beach Card -->
+            <div class="facilities-card">
+                <img src="https://placehold.co/400x200/4f46e5/ffffff?text=Beachfront" alt="Beach">
+                <div class="facilities-card-content">
+                    <h2 class="font-bold">Stunning Beachfront Escape</h2>
+                    <p class="desc">
+                        Sink your feet into the soft, golden sands as you take in the breathtaking coastal views. The rhythmic sound of waves sets the perfect backdrop for relaxation, adventure, or simply unwinding.
+                        <span class="full-text" style="display: none;"> Our private beachfront offers direct access to the pristine ocean, ideal for leisurely strolls, sunbathing, or enjoying a spectacular sunset. Beach services ensure your comfort with loungers and parasols.</span>
+                    </p>
+                    <button onclick="toggleText(this)">Read More</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <section id="room" class="section__container">
+        <h2>The Most Memorable Rest Time Starts Here.</h2>
+        <div class="room__grid">
+            
+            <!-- Room 1 -->
+            <div class="room__card">
+                <div class="room__card__image">
+                    <img src="https://placehold.co/400x220/4f46e5/ffffff?text=Deluxe+Ocean+View+Room" alt="Deluxe Ocean View Room">
+                    <div class="room__card__icons">
+                        <span><i class="ri-heart-fill"></i></span>
+                        <span><i class="ri-paint-fill"></i></span>
+                        <span><i class="ri-shield-star-line"></i></span>
+                    </div>
+                </div>
+                <div class="room__card__details">
+                    <h4>Deluxe Ocean View</h4>
+                    <p>
+                        Bask in luxury with breathtaking ocean views from your private suite. Enjoy spacious comfort and elegant decor.
+                    </p>
+                    <h5>Starting from <span class="font-semibold text-emerald-500">$299/night</span></h5>
+                    <a href="#book-now">
+                        <button class="btn">Book Now</button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Room 2 -->
+            <div class="room__card">
+                <div class="room__card__image">
+                    <img src="https://placehold.co/400x220/4f46e5/ffffff?text=Executive+Cityscape+Room" alt="Executive Cityscape Room">
+                    <div class="room__card__icons">
+                        <span><i class="ri-heart-fill"></i></span>
+                        <span><i class="ri-paint-fill"></i></span>
+                        <span><i class="ri-shield-star-line"></i></span>
+                    </div>
+                </div>
+                <div class="room__card__details">
+                    <h4>Executive Cityscape Room</h4>
+                    <p>
+                        Experience urban elegance and modern comfort in the heart of the city, with stunning panoramic views.
+                    </p>
+                    <h5>Starting from <span class="font-semibold text-emerald-500">$199/night</span></h5>
+                    <a href="#book-now">
+                        <button class="btn">Book Now</button>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Room 3 -->
+            <div class="room__card">
+                <div class="room__card__image">
+                    <img src="https://placehold.co/400x220/4f46e5/ffffff?text=Family+Garden+Retreat" alt="Family Garden Retreat">
+                    <div class="room__card__icons">
+                        <span><i class="ri-heart-fill"></i></span>
+                        <span><i class="ri-paint-fill"></i></span>
+                        <span><i class="ri-shield-star-line"></i></span>
+                    </div>
+                </div>
+                <div class="room__card__details">
+                    <h4>Family Garden Retreat</h4>
+                    <p>
+                        Spacious and inviting, perfect for creating cherished memories with loved ones amidst lush gardens.
+                    </p>
+                    <h5>Starting from <span class="font-semibold text-emerald-500">$249/night</span></h5>
+                    <a href="#book-now">
+                        <button class="btn">Book Now</button>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="service" id="service">
+        <div class="section__container service__container">
+            <div class="service__content text-center md:text-left">
+                <p class="section__subheader">AMENITIES</p>
+                <h2 class="section__header text-white">Strive Only For The Best.</h2>
+                <ul class="service__list">
+                    <li>
+                        <span><i class="ri-shield-star-line"></i></span>
+                        High Class Security
+                    </li>
+                    <li>
+                        <span><i class="ri-24-hours-line"></i></span>
+                        24 Hours Room Service
+                    </li>
+                    <li>
+                        <span><i class="ri-wifi-fill"></i></i></span>
+                        Wifi
+                    </li>
+                    <li>
+                        <span><i class="ri-map-2-line"></i></span>
+                        Tourist Guide Support
+                    </li>
+                    <li>
+                        <span><i class="ri-flight-land-line"></i></span>
+                        Airport Transfer
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section__container room__container" id="activities">
+        <p class="section__subheader">Activities while in Zanzibar</p>
+        <h2 class="section__header">Your Gateway to Exotic Island Adventures</h2>
+        <div class="room__grid">
+            <div class="room__card">
+                <div class="room__card__image">
+                    <img src="assets/jozani.jpg" alt="Jozani Forest" />
+                    <div class="room__card__icons">
+                        <span><i class="ri-heart-fill"></i></span>
+                        <span><i class="ri-paint-fill"></i></span>
+                        <span><i class="ri-shield-star-line"></i></span>
+                    </div>
+                </div>
+                <div class="room__card__details">
+                    <h4>Jozani Forest</h4>
+                    <p>
+                        Jozani Forest is Zanzibar’s only national park, home to rare red colobus monkeys, lush greenery, and fascinating wildlife walking trails.
+                    </p>
+                </div>
+            </div>
+            <div class="room__card">
+                <div class="room__card__image">
+                    <img src="assets/mnemba.jpg" alt="Mnemba Atoll" />
+                    <div class="room__card__icons">
+                        <span><i class="ri-heart-fill"></i></span>
+                        <span><i class="ri-paint-fill"></i></span>
+                        <span><i class="ri-shield-star-line"></i></span>
+                    </div>
+                </div>
+                <div class="room__card__details">
+                    <h4>Mnemba Atoll</h4>
+                    <p>
+                        Mnemba Atoll is a stunning marine reserve known for excellent diving and snorkeling with colorful coral reefs and abundant marine life.
+                    </p>
+                </div>
+            </div>
+            <div class="room__card">
+                <div class="room__card__image">
+                    <img src="assets/nungwi.jpg" alt="Nungwi Beach" />
+                    <div class="room__card__icons">
+                        <span><i class="ri-heart-fill"></i></span>
+                        <span><i class="ri-paint-fill"></i></span>
+                        <span><i class="ri-shield-star-line"></i></span>
+                    </div>
+                </div>
+                <div class="room__card__details">
+                    <h4>Nungwi Beach</h4>
+                    <p>
+                        Nungwi Beach features pristine white sands and crystal-clear waters, perfect for swimming, snorkeling, and enjoying vibrant nightlife along Zanzibar’s northern coast.
+                    </p>
+                </div>
+            </div>
+            <div class="room__card">
+                <div class="room__card__image">
+                    <img src="assets/jetski.jpg" alt="Water Sports" />
+                    <div class="room__card__icons">
+                        <span><i class="ri-heart-fill"></i></span>
+                        <span><i class="ri-paint-fill"></i></span>
+                        <span><i class="ri-shield-star-line"></i></span>
+                    </div>
+                </div>
+                <div class="room__card__details">
+                    <h4>Water Sports</h4>
+                    <p>
+                        Zanzibar offers unforgettable aquatic adventures — glide over turquoise waters in a glass kayak, swim with dolphins or sea turtles, or walk beneath the waves in a magical undersea experience. Whether you seek thrill or tranquility, the island’s warm, crystal-clear ocean is the perfect playground for all water lovers.
+                    </p>
+                </div>
+            </div>
+            <div class="room__card">
+                <div class="room__card__image">
+                    <img src="assets/prison.jpg" alt="Prison Island" />
+                    <div class="room__card__icons">
+                        <span><i class="ri-heart-fill"></i></span>
+                        <span><i class="ri-paint-fill"></i></span>
+                        <span><i class="ri-shield-star-line"></i></span>
+                    </div>
+                </div>
+                <div class="room__card__details">
+                    <h4>Prison Island (Changuu Island)</h4>
+                    <p>
+                        Prison Island is famous for giant Aldabra tortoises and turquoise waters, offering snorkeling, history, and beautiful beaches just off Stone Town.
+                    </p>
+                </div>
+            </div>
+            <div class="room__card">
+                <div class="room__card__image">
+                    <img src="assets/spice.jpg" alt="Spice Farms" />
+                    <div class="room__card__icons">
+                        <span><i class="ri-heart-fill"></i></span>
+                        <span><i class="ri-paint-fill"></i></span>
+                        <span><i class="ri-shield-star-line"></i></span>
+                    </div>
+                </div>
+                <div class="room__card__details">
+                    <h4>Spice Farms</h4>
+                    <p>
+                        Zanzibar’s Spice Farms offer guided tours through fragrant plantations, showcasing cloves, nutmeg, cinnamon, and other spices that shaped the island’s history.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section__container banner__container">
+        <div class="banner__content">
+            <div class="banner__card">
+                <h4>350+</h4>
+                <p>Bookings Completed</p>
+            </div>
+            <div class="banner__card">
+                <h4>600+</h4>
+                <p>Happy Customers</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="explore" id="explore">
+        <p class="section__subheader">EXPLORE</p>
+        <h2 class="section__header">What's New Today.</h2>
+        <div class="explore__bg">
+            <div class="explore__content">
+                <p class="section__description">10th MAR 2023</p>
+                <h4>A New Menu Is Available In Our Hotel.</h4>
+                <button class="btn">Continue</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="book-now" class="booking-form-section section__container">
+        <h2 class="text-4xl font-bold text-center text-gray-800 mb-8">Book Your Stay</h2>
+        <div class="bg-white rounded-xl shadow-lg p-8 md:p-12 mb-8">
+            <p class="text-gray-700 text-lg mb-6 text-center">
+                Fill out the form below to submit your booking request. Our team will review it and confirm your reservation shortly.
+            </p>
+
+            <form id="booking-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="guest-name" class="block text-gray-700 text-sm font-semibold mb-2">Full Name</label>
+                    <input type="text" id="guest-name" name="guest-name" class="form-input" placeholder="John Doe" required>
+                </div>
+                <div>
+                    <label for="guest-email" class="block text-gray-700 text-sm font-semibold mb-2">Email Address</label>
+                    <input type="email" id="guest-email" name="guest-email" class="form-input" placeholder="john.doe@example.com" required>
+                </div>
+                <div>
+                    <label for="check-in-date" class="block text-gray-700 text-sm font-semibold mb-2">Check-in Date</label>
+                    <input type="text" id="check-in-date" name="check-in-date" class="form-input" required>
+                </div>
+                <div>
+                    <label for="check-out-date" class="block text-gray-700 text-sm font-semibold mb-2">Check-out Date</label>
+                    <input type="text" id="check-out-date" name="check-out-date" class="form-input" required>
+                </div>
+                <div>
+                    <label for="room-type" class="block text-gray-700 text-sm font-semibold mb-2">Preferred Room Type</label>
+                    <select id="room-type" name="room-type" class="form-input" required>
+                        <option value="">Select a room type</option>
+                        <option value="Standard">Standard Room</option>
+                        <option value="Deluxe">Deluxe Room</option>
+                        <option value="Suite">Executive Suite</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="num-pax" class="block text-gray-700 text-sm font-semibold mb-2">Number of Guests</label>
+                    <input type="number" id="num-pax" name="num-pax" class="form-input" min="1" max="6" value="1" required>
+                </div>
+                <div class="md:col-span-2">
+                    <label for="special-requests" class="block text-gray-700 text-sm font-semibold mb-2">Special Requests (Optional)</label>
+                    <textarea id="special-requests" name="special-requests" class="form-input h-24 resize-y" placeholder="e.g., King-size bed, non-smoking, early check-in"></textarea>
+                </div>
+
+                <div class="md:col-span-2 flex justify-center mt-4">
+                  
+                    <button type="submit" id="submit-booking-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Submit Booking Request
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div id="message-box" class="hidden mt-6 p-4 rounded-md text-center text-lg font-semibold"></div>
+        <div id="availability-result" class="hidden mt-4 p-4 rounded-md text-center text-lg font-semibold"></div>
+        <!-- Add this after #message-box and #availability-result -->
+    <div id="loading-spinner" class="hidden mt-6 flex justify-center">
+        <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+        </svg>
+    </div>
+    </section>
+
+    <a href="https://wa.me/254745853082" class="whatsapp-float" target="_blank" title="Chat on WhatsApp">
+        <img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png" alt="WhatsApp" />
+    </a>
+    <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+
+    <footer class="footer" id="contact">
+        <div class="section__container footer__container">
+            <div class="footer__col">
+                <div class="logo">
+                    <a href="#home"><img src="https://placehold.co/150x50/000000/FFFFFF?text=Hotel+Logo" alt="logo" /></a>
+                </div>
+                <p class="section__description">
+                    Discover a world of comfort, luxury, and adventure as you explore
+                    our curated selection of hotels, making every moment of your getaway
+                    in Zanzibar truly extraordinary.
+                </p>
+                <a href="#book-now">
+                    <button class="btn">Book Now</button>
+                </a>
+            </div>
+            
+            <div class="footer__col">
+                <h4 class="text-white">OUR LOCATION</h4>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.6649319213548!2d39.407964799999995!3d-6.040631!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185d2d9b3ea1be8d%3A0xf85e6fd243ac72c9!2sOcean%20Bliss%20Beach%20Resort!5e0!3m2!1sen!2stz!4v1747598231721!5m2!1sen!2stz" width="100%" height="250" style="border:0; border-radius: 0.5rem; margin-top: 1rem;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+
+            <div class="footer__col">
+                <h4>CONTACT US</h4>
+                <ul class="footer__links">
+                    <p style="color: #d1d5db;">+255700000000</p>
+                    <li><a href="mailto:oceanbliss@info.com">oceanbliss@info.com</a></li>
+                </ul>
+                <div class="footer__socials">
+                    <a href="#"><img src="https://placehold.co/30x30/FFFFFF/000000?text=FB" alt="facebook" /></a>
+                    <a href="#"><img src="https://placehold.co/30x30/FFFFFF/000000?text=IG" alt="instagram" /></a>
+                    <a href="https://wa.me/254745853082" target="_blank"><img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png" alt="whatsapp" style="filter: brightness(0) invert(1);" /></a>
+                </div>
+            </div>
+        </div>
+        <div> <a href="/dashboard" class="btn nav__btn" style="margin-left: 1rem;">Admin Dashboard</a></div>
+        <div class="footer__bar">
+            Copyright © 2025 Ocean Bliss Hotel. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Swiper JS -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <!-- ScrollReveal JS MUST be loaded before any script tries to use it -->
+    <script src="https://unpkg.com/scrollreveal"></script> 
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="module">
+        // JavaScript for mobile navigation menu
+        const menuBtn = document.getElementById('menu-btn');
+        const navLinks = document.getElementById('nav-links');
+
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+        });
+
+        // Close nav menu when a link is clicked
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('open');
+            });
+        });
+
+        // JavaScript for "Read More" functionality in Facilities
+        function toggleText(btn) {
+            const fullText = btn.previousElementSibling.querySelector('.full-text');
+            const isVisible = fullText.style.display === "inline";
+            fullText.style.display = isVisible ? "none" : "inline";
+            btn.innerText = isVisible ? "Read More" : "Show Less";
+        }
+
+        // JavaScript for Scroll to Top Button
+        const mybutton = document.getElementById("myBtn");
+
+        window.onscroll = function() {scrollFunction()};
+
+        function scrollFunction() {
+          if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            mybutton.style.display = "block";
+          } else {
+            mybutton.style.display = "none";
+          }
+        }
+
+        function topFunction() {
+          document.body.scrollTop = 0; // For Safari
+          document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+        }
+
+        // --- Firebase Booking Form Logic ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Your Firebase project configuration for the PUBLIC-facing website
+        // NOTE: For security, only allow 'create' operations on public collections in your Firestore rules.
+      const firebaseConfig = {
+  apiKey: "AIzaSyAGIUo2aSN8g9t4oN9dlZZjOO_4KpvZ3qM",
+  authDomain: "oceanbliss-e0ef5.firebaseapp.com",
+  projectId: "oceanbliss-e0ef5",
+  storageBucket: "oceanbliss-e0ef5.appspot.com",
+  messagingSenderId: "991426551716",
+  appId: "1:991426551716:web:f4944ad12aa0035b282b31",
+  measurementId: "G-LF1ETC2M5Y"
+};
+
+const appId = "oceanbliss-e0ef5"; // Use your actual projectId as appId
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const bookingForm = document.getElementById('booking-form');
+                const checkInInput = document.getElementById('check-in-date');
+        const checkOutInput = document.getElementById('check-out-date');
+        
+        flatpickr(checkInInput, {
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            onChange: function(selectedDates) {
+                if (selectedDates.length && checkOutInput._flatpickr) {
+                    // Set check-out minDate to the day after check-in
+                    const nextDay = new Date(selectedDates[0]);
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    checkOutInput._flatpickr.set('minDate', nextDay);
+                }
+            }
+        });
+        flatpickr(checkOutInput, {
+            dateFormat: "Y-m-d",
+            minDate: "today"
+        });
+        const messageBox = document.getElementById('message-box');
+        const availabilityResultBox = document.getElementById('availability-result');
+       
+        const submitBookingBtn = document.getElementById('submit-booking-btn');
+        function showLoading() {
+        document.getElementById('loading-spinner').classList.remove('hidden');
+        submitBookingBtn.disabled = true;
+    }
+    function hideLoading() {
+        document.getElementById('loading-spinner').classList.add('hidden');
+        submitBookingBtn.disabled = false;
+    }
+        function showMessage(msg, type = 'success', targetBox = messageBox) {
+            targetBox.textContent = msg;
+            targetBox.className = `mt-6 p-4 rounded-md text-center text-lg font-semibold ${
+                type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+            }`;
+            targetBox.classList.remove('hidden');
+        }
+
+        function clearMessages() {
+            messageBox.classList.add('hidden');
+            availabilityResultBox.classList.add('hidden');
+        }
+
+        // Function to check room availability
+        async function checkRoomAvailability() {
+            clearMessages();
+            const checkInDateStr = document.getElementById('check-in-date').value;
+            const checkOutDateStr = document.getElementById('check-out-date').value;
+                const roomType = document.getElementById('room-type').value;
+
+            if (!checkInDateStr || !checkOutDateStr || !roomType) {
+                showMessage('Please select check-in date, check-out date, and room type.', 'error', availabilityResultBox);
+                return false;
+            }
+
+            const checkInDate = new Date(checkInDateStr);
+            const checkOutDate = new Date(checkOutDateStr);
+
+            if (checkInDate >= checkOutDate) {
+                showMessage('Check-out date must be after check-in date.', 'error', availabilityResultBox);
+                return false;
+            }
+
+            // IMPORTANT SECURITY NOTE:
+            // For a real-world application, directly reading 'users' collections from a public website
+            // is a severe security risk as it exposes internal hotel data.
+            // A secure solution would involve:
+            // 1. The admin dashboard publishing a *summary* of availability to a public collection.
+            // 2. A Firebase Cloud Function acting as a secure API endpoint for availability checks.
+            // For this demo, we're proceeding with direct read for functionality demonstration.
+            // Ensure your Firestore rules are updated to allow reads for these collections if running locally.
+
+            try {
+                // Fetch all rooms
+  const roomsSnapshot = await getDocs(collection(db, `artifacts/${appId}/users/3xBIV4lOUEf3Jnu6DI7prY0WdzF3/rooms`));// Assuming a default admin userId for public read
+                const allRooms = roomsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Filter rooms by requested type
+                const desiredRooms = allRooms.filter(room => room.type === roomType);
+
+                if (desiredRooms.length === 0) {
+                    showMessage(`No rooms of type "${roomType}" found.`, 'error', availabilityResultBox);
+                    return false;
+                }
+
+                // Fetch all existing bookings from the admin dashboard's bookings collection
+               const bookingsSnapshot = await getDocs(collection(db, `artifacts/${appId}/users/3xBIV4lOUEf3Jnu6DI7prY0WdzF3/bookings`));// Assuming a default admin userId for public read
+                const allBookings = bookingsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                let availableRoomsCount = 0;
+
+                for (const room of desiredRooms) {
+                    let isRoomAvailable = true;
+                    // Check if this room has any conflicting bookings
+                    for (const existingBooking of allBookings) {
+                        if (existingBooking.roomId === room.id && 
+                            (existingBooking.status === 'confirmed' || existingBooking.status === 'checkedIn')) {
+                            
+                            const existingCheckIn = new Date(existingBooking.checkInDate);
+                            const existingCheckOut = new Date(existingBooking.checkOutDate);
+
+                            // Check for date overlap: [start1, end1) overlaps with [start2, end2)
+                            // No overlap if end1 <= start2 OR start1 >= end2
+                            const noOverlap = checkOutDate <= existingCheckIn || checkInDate >= existingCheckOut;
+                            if (!noOverlap) {
+                                isRoomAvailable = false;
+                                break; // Conflict found, this room is not available
+                            }
+                        }
+                    }
+                    if (isRoomAvailable) {
+                        availableRoomsCount++;
+                    }
+                }
+
+                if (availableRoomsCount > 0) {
+                    showMessage(`Great news! ${availableRoomsCount} rooms of type "${roomType}" are available for your selected dates.`, 'success', availabilityResultBox);
+                    return true;
+                } else {
+                    showMessage(`Unfortunately, no rooms of type "${roomType}" are available for your selected dates. Please try different dates or room types.`, 'error', availabilityResultBox);
+                    return false;
+                }
+
+            } catch (error) {
+                console.error("Error checking availability:", error);
+                showMessage('An error occurred while checking availability. Please try again later.', 'error', availabilityResultBox);
+                return false;
+            }
+        }
+
+        // Event listener for the "Check Availability" button
+      
+
+        // Modify form submission to first check availability
+     bookingForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearMessages();
+    showLoading(); // Show spinner and disable button
+
+    try {
+        // First, perform availability check
+        const isAvailable = await checkRoomAvailability();
+
+        if (!isAvailable) {
+            showMessage('Booking not submitted: Room is not available for the selected dates.', 'error', messageBox);
+            return;
+        }
+
+        // Proceed with booking submission if available
+        const guestName = document.getElementById('guest-name').value;
+        const guestEmail = document.getElementById('guest-email').value;
+        const checkInDate = document.getElementById('check-in-date').value;
+        const checkOutDate = document.getElementById('check-out-date').value;
+        const roomType = document.getElementById('room-type').value;
+        const numPax = parseInt(document.getElementById('num-pax').value);
+        const specialRequests = document.getElementById('special-requests').value;
+
+        await addDoc(collection(db, `artifacts/${appId}/users/public/webbookings`), {
+            guestName,
+            guestEmail,
+            checkInDate,
+            checkOutDate,
+            roomTypeRequested: roomType,
+            paxCount: numPax,
+            specialRequests,
+            status: 'pending',
+            createdAt: serverTimestamp()
+        });
+
+        showMessage('Your booking request has been submitted successfully! We will contact you soon.', 'success', messageBox);
+        bookingForm.reset();
+        // clearMessages(); <-- REMOVE THIS LINE
+    } catch (e) {
+        console.error("Error submitting website booking: ", e);
+        showMessage('Failed to submit booking. Please try again.', 'error', messageBox);
+    } finally {
+        hideLoading(); // Always hide spinner and re-enable button
+    }
+});
+        // Basic ScrollReveal initialization (adjust as needed)
+        // Check if ScrollReveal is defined before initializing
+        if (typeof ScrollReveal !== 'undefined') {
+            ScrollReveal().reveal('.header__container', { delay: 300, distance: '50px', origin: 'top' });
+            ScrollReveal().reveal('.about__container', { delay: 400, distance: '50px', origin: 'left' });
+            ScrollReveal().reveal('.facilities-card', { interval: 100, origin: 'bottom', distance: '30px' });
+            ScrollReveal().reveal('.room__card', { interval: 150, origin: 'bottom', distance: '30px' });
+            ScrollReveal().reveal('.service__content', { delay: 400, distance: '50px', origin: 'right' });
+            ScrollReveal().reveal('.banner__card', { interval: 200, origin: 'top', distance: '30px' });
+            ScrollReveal().reveal('.explore__content', { delay: 400, distance: '50px', origin: 'bottom' });
+            ScrollReveal().reveal('.footer__col', { interval: 100, origin: 'bottom', distance: '30px' });
+        } else {
+            console.warn("ScrollReveal is not defined. Animations may not work.");
+        }
+    
+    </script>
+</body>
+</html>
