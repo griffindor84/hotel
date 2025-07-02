@@ -14,7 +14,11 @@ import AdminPanel from './components/AdminPanel';
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 // Define the AppContext for Firebase instances and user ID
+const SHARED_USER_ID = "3xBIV4lOUEf3Jnu6DI7prY0WdzF3"; // All dashboard roles use this
 const AppContext = createContext();
+// --- SHARED USER ID FOR ALL DASHBOARD ROLES ---
+// All dashboard users (admin, finance, receptionist) will use this shared userId for bookings/rooms
+
 // ...existing code...
 // ...existing imports...
 const initialAuthToken = process.env.REACT_APP_initialAuthToken || null;
@@ -80,6 +84,10 @@ const useAppContext = () => {
 // In a real Firebase setup, you'd import and use `serverTimestamp` from 'firebase/firestore'.
 // For this environment, we'll use new Date() as a client-side timestamp.
 const serverTimestamp = () => new Date();
+
+// --- PATCH: Force all dashboard Firestore ops to use SHARED_USER_ID ---
+// Utility to always use shared userId for all dashboard Firestore paths
+const getDashboardUserId = () => SHARED_USER_ID;
 
 
 // Utility function for showing messages (replaces alert/confirm)
@@ -427,155 +435,164 @@ const RoomsManagement = ({ rooms, setShowRoomsModal, setEditRoomData, handleDele
 );
 
 // UI Component: Bookings Management
-const BookingsManagement = ({ bookings, setShowBookingsModal, setEditBookingData, handleDeleteBooking, generateGuestMessage, isDrafting, rooms, addChargeOrPaymentToBooking, checkInGuest, checkOutGuest, generateInvoice }) => (
-    <div style={{ padding: '1.5rem', backgroundColor: '#fff', borderRadius: '0.5rem', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#374151' }}>Booking Management</h2>
-            <button
-                onClick={() => { setShowBookingsModal(true); setEditBookingData(null); }}
-                style={{
-                    backgroundColor: '#2563eb',
-                    color: '#fff',
-                    padding: '0.5rem 1rem',
-                    borderRadius: '0.375rem',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s'
-                }}
-            >
-                Add New Booking
-            </button>
-        </div>
+const BookingsManagement = ({
+  bookings,
+  setShowBookingsModal,
+  setEditBookingData,
+  handleDeleteBooking,
+  generateGuestMessage,
+  isDrafting,
+  rooms,
+  addChargeOrPaymentToBooking,
+  checkInGuest,
+  checkOutGuest,
+  generateInvoice
+}) => {
+  const [searchQuery, setSearchQuery] = useState('');
 
-        {bookings.length === 0 ? (
-            <p style={{ color: '#6b7280' }}>No bookings added yet.</p>
-        ) : (
-            <div style={{ overflowX: 'auto', borderRadius: '0.5rem', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                <table style={{ minWidth: '100%', borderCollapse: 'collapse' }}>
-                    <thead style={{ backgroundColor: '#f9fafb' }}>
-                        <tr>
-                            <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                Guest Name
-                            </th>
-                            <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                Room
-                            </th>
-                            <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                Dates
-                            </th>
-                            <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                Pax
-                            </th>
-                            <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                Balance Due
-                            </th>
-                            <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                Status
-                            </th>
-                            <th style={{ padding: '0.75rem 1.5rem', position: 'relative' }}>
-                                <span className="sr-only">Actions</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody style={{ backgroundColor: '#fff', borderBottom: '1px solid #e5e7eb' }}>
-                        {bookings.map((booking) => (
-                            <tr key={booking.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                                <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', fontWeight: '500', color: '#111827' }}>
-                                    {booking.guestName}
-                                </td>
-                                <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', color: '#6b7280' }}>
-                                    {booking.roomNumber ? `No. ${booking.roomNumber} (${booking.roomType})` : booking.roomType}
-                                </td>
-                                <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', color: '#6b7280' }}>
-                                    {booking.checkInDate} to {booking.checkOutDate}
-                                </td>
-                                <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', color: '#6b7280' }}>
-                                    {booking.paxCount}
-                                </td>
-                                <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', color: '#6b7280' }}>
-                                    ${booking.balanceDue ? booking.balanceDue.toFixed(2) : '0.00'}
-                                </td>
-                                <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', color: '#6b7280' }}>
-                                    <span style={{
-                                        padding: '0.25rem 0.5rem',
-                                        display: 'inline-flex',
-                                        fontSize: '0.75rem',
-                                        lineHeight: '1.25rem',
-                                        fontWeight: '600',
-                                        borderRadius: '9999px',
-                                        backgroundColor: booking.status === 'confirmed' ? '#d1fae5' : booking.status === 'pending' ? '#fffbeb' : booking.status === 'checkedIn' ? '#eff6ff' : booking.status === 'checkedOut' ? '#e5e7eb' : '#fee2e2',
-                                        color: booking.status === 'confirmed' ? '#065f46' : booking.status === 'pending' ? '#92400e' : booking.status === 'checkedIn' ? '#1e40af' : booking.status === 'checkedOut' ? '#374151' : '#991b1b'
-                                    }}>
-                                        {booking.status}
-                                    </span>
-                                </td>
-                                <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', textAlign: 'right', fontSize: '0.875rem', fontWeight: '500' }}>
-                                    {/* Edit button */}
-                                    <button
-                                        onClick={() => { setShowBookingsModal(true); setEditBookingData(booking); }}
-                                        style={{ color: '#4f46e5', marginRight: '0.75rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s' }}
-                                    >
-                                        Edit
-                                    </button>
-                                    {/* Check-in button */}
-                                    {(booking.status === 'confirmed' || booking.status === 'pending') && (
-                                        <button
-                                            onClick={() => checkInGuest(booking.id, booking.roomId)}
-                                            style={{ backgroundColor: '#22c55e', color: '#fff', padding: '0.25rem 0.75rem', borderRadius: '0.25rem', fontSize: '0.75rem', marginLeft: '0.5rem', border: 'none', cursor: 'pointer', transition: 'background-color 0.2s' }}
-                                        >
-                                            Check In
-                                        </button>
-                                    )}
-                                    {/* Check-out button */}
-                                    {booking.status === 'checkedIn' && (
-                                        <button
-                                            onClick={() => checkOutGuest(booking.id, booking.roomId)}
-                                            style={{ backgroundColor: '#f97316', color: '#fff', padding: '0.25rem 0.75rem', borderRadius: '0.25rem', fontSize: '0.75rem', marginLeft: '0.5rem', border: 'none', cursor: 'pointer', transition: 'background-color 0.2s' }}
-                                        >
-                                            Check Out
-                                        </button>
-                                    )}
-                                    {/* Add Charge/Payment buttons for checked-in guests */}
-                                    {booking.status === 'checkedIn' && (
-                                        <>
-                                            <button
-                                                onClick={() => addChargeOrPaymentToBooking(booking.id, 'charge')}
-                                                style={{ backgroundColor: '#f97316', color: '#fff', padding: '0.25rem 0.75rem', borderRadius: '0.25rem', fontSize: '0.75rem', marginLeft: '0.5rem', border: 'none', cursor: 'pointer', transition: 'background-color 0.2s' }}
-                                            >
-                                                Add Charge
-                                            </button>
-                                            <button
-                                                onClick={() => addChargeOrPaymentToBooking(booking.id, 'payment')}
-                                                style={{ backgroundColor: '#22c55e', color: '#fff', padding: '0.25rem 0.75rem', borderRadius: '0.25rem', fontSize: '0.75rem', marginLeft: '0.5rem', border: 'none', cursor: 'pointer', transition: 'background-color 0.2s' }}
-                                            >
-                                                Add Payment
-                                            </button>
-                                        </>
-                                    )}
-                                    {/* Generate Invoice Button */}
-                                    {(booking.status === 'checkedIn' || booking.status === 'checkedOut') && (
-                                        <button
-                                            onClick={() => generateInvoice(booking.id)}
-                                            style={{ backgroundColor: '#60a5fa', color: '#fff', padding: '0.25rem 0.75rem', borderRadius: '0.25rem', fontSize: '0.75rem', marginLeft: '0.5rem', border: 'none', cursor: 'pointer', transition: 'background-color 0.2s' }}
-                                        >
-                                            Generate Invoice
-                                        </button>
-                                    )}
-                                    <button
-                                        onClick={() => handleDeleteBooking(booking.id)}
-                                        style={{ color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s' }}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        )}
+  // Filter bookings by guest name
+  const filteredBookings = bookings.filter((booking) =>
+    booking.guestName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div style={{ padding: '1.5rem', backgroundColor: '#fff', borderRadius: '0.5rem', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#374151' }}>Booking Management</h2>
+        <button
+          onClick={() => {
+            setShowBookingsModal(true);
+            setEditBookingData(null);
+          }}
+          style={{
+            backgroundColor: '#2563eb',
+            color: '#fff',
+            padding: '0.5rem 1rem',
+            borderRadius: '0.375rem',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s'
+          }}
+        >
+          Add New Booking
+        </button>
+      </div>
+
+      {/* 🔍 Guest Search Field */}
+      <input
+        type="text"
+        placeholder="Search guest name..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        style={{
+          marginBottom: '1rem',
+          padding: '0.5rem',
+          width: '100%',
+          maxWidth: '300px',
+          borderRadius: '0.375rem',
+          border: '1px solid #d1d5db'
+        }}
+      />
+
+      {filteredBookings.length === 0 ? (
+        <p style={{ color: '#6b7280' }}>No matching bookings found.</p>
+      ) : (
+        <div style={{ overflowX: 'auto', borderRadius: '0.5rem', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+          <table style={{ minWidth: '100%', borderCollapse: 'collapse' }}>
+            <thead style={{ backgroundColor: '#f9fafb' }}>
+              <tr>
+                <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Guest Name</th>
+                <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email</th>
+                <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Room</th>
+                <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Check-in</th>
+                <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Check-out</th>
+                <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</th>
+                <th style={{ padding: '0.75rem 1.5rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: '500', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Balance</th>
+                <th style={{ padding: '0.75rem 1.5rem', position: 'relative' }}><span className="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredBookings.map((booking) => (
+                <tr key={booking.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                  <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', fontWeight: '500', color: '#111827' }}>{booking.guestName}</td>
+                  <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', color: '#6b7280' }}>{booking.guestEmail}</td>
+                  <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', color: '#6b7280' }}>{booking.roomNumber} {booking.roomType && `(${booking.roomType})`}</td>
+                  <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', color: '#6b7280' }}>{booking.checkInDate}</td>
+                  <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', color: '#6b7280' }}>{booking.checkOutDate}</td>
+                  <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', color: '#6b7280' }}>
+                    <span style={{
+                      padding: '0.25rem 0.5rem',
+                      display: 'inline-flex',
+                      fontSize: '0.75rem',
+                      lineHeight: '1.25rem',
+                      fontWeight: '600',
+                      borderRadius: '9999px',
+                      backgroundColor:
+                        booking.status === 'confirmed' ? '#dbeafe' :
+                        booking.status === 'checkedIn' ? '#d1fae5' :
+                        booking.status === 'checkedOut' ? '#fef3c7' :
+                        booking.status === 'pending' ? '#f3f4f6' :
+                        '#e5e7eb',
+                      color:
+                        booking.status === 'confirmed' ? '#1d4ed8' :
+                        booking.status === 'checkedIn' ? '#065f46' :
+                        booking.status === 'checkedOut' ? '#92400e' :
+                        booking.status === 'pending' ? '#374151' :
+                        '#374151'
+                    }}>{booking.status}</span>
+                  </td>
+                  <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', fontSize: '0.875rem', color: booking.balanceDue > 0 ? '#dc2626' : '#10b981', fontWeight: 600 }}>
+                    ${booking.balanceDue ? booking.balanceDue.toFixed(2) : '0.00'}
+                  </td>
+                  <td style={{ padding: '1rem 1.5rem', whiteSpace: 'nowrap', textAlign: 'right', fontSize: '0.875rem', fontWeight: '500' }}>
+                    <button
+                      onClick={() => { setShowBookingsModal(true); setEditBookingData(booking); }}
+                      style={{ color: '#4f46e5', marginRight: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s' }}
+                    >Edit</button>
+                    <button
+                      onClick={() => handleDeleteBooking(booking.id)}
+                      style={{ color: '#dc2626', marginRight: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s' }}
+                    >Delete</button>
+                    <button
+                      onClick={() => generateInvoice(booking.id)}
+                      style={{ color: '#2563eb', marginRight: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s' }}
+                    >Invoice</button>
+                    <button
+                      onClick={() => generateGuestMessage(booking, 'welcome')}
+                      style={{ color: '#10b981', marginRight: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s' }}
+                      disabled={isDrafting}
+                    >Message</button>
+                    <button
+                      onClick={() => addChargeOrPaymentToBooking(booking.id, 'charge')}
+                      style={{ color: '#f59e42', marginRight: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s' }}
+                    >Charge</button>
+                    <button
+                      onClick={() => addChargeOrPaymentToBooking(booking.id, 'payment')}
+                      style={{ color: '#0ea5e9', marginRight: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s' }}
+                    >Payment</button>
+                    {booking.status === 'confirmed' && (
+                      <button
+                        onClick={() => checkInGuest(booking.id, booking.roomId)}
+                        style={{ color: '#16a34a', marginRight: '0.5rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s' }}
+                      >Check In</button>
+                    )}
+                    {booking.status === 'checkedIn' && (
+                      <button
+                        onClick={() => checkOutGuest(booking.id, booking.roomId)}
+                        style={{ color: '#ea580c', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 0.2s' }}
+                      >Check Out</button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
-);
+  );
+};
+
 
 // UI Component: Website Bookings Management
 const WebsiteBookingsManagement = ({ websiteBookings, handleAcceptWebsiteBooking, handleRejectWebsiteBooking }) => (
@@ -1602,14 +1619,14 @@ const App = () => {
     const handleCloseCityLedger = () => setShowCityLedgerModal(false);
 const [cityLedgerTransactions, setCityLedgerTransactions] = useState([]);
 const handleShowCityLedger = async () => {
-    if (!db || !userId) return;
+    if (!db) return;
     // Fetch all transactions from all bookings that are on account (city ledger)
-    const bookingsRef = collection(db, `artifacts/${appId}/users/${userId}/bookings`);
+    const bookingsRef = collection(db, `artifacts/${appId}/users/${SHARED_USER_ID}/bookings`);
     const bookingsSnap = await getDocs(bookingsRef);
     let allTransactions = [];
     for (const bookingDoc of bookingsSnap.docs) {
         const bookingId = bookingDoc.id;
-        const transactionsRef = collection(db, `artifacts/${appId}/users/${userId}/bookings/${bookingId}/transactions`);
+        const transactionsRef = collection(db, `artifacts/${appId}/users/${SHARED_USER_ID}/bookings/${bookingId}/transactions`);
         const transactionsSnap = await getDocs(transactionsRef);
         transactionsSnap.forEach(doc => {
             const t = doc.data();
@@ -1658,14 +1675,14 @@ const handleLogin = async (e) => {
 
     // --- Room Management Functions ---
     const handleAddOrUpdateRoom = async (roomData) => {
-        if (!db || !userId) {
+        if (!db) {
             showMessage('Database not ready. Please try again.', 'error');
             return;
         }
 
         try {
             if (roomData.id) { // Update existing room
-                const roomRef = doc(db, `artifacts/${appId}/users/${userId}/rooms`, roomData.id);
+                const roomRef = doc(db, `artifacts/${appId}/users/${SHARED_USER_ID}/rooms`, roomData.id);
                 await updateDoc(roomRef, {
                     type: roomData.type,
                     roomNumber: roomData.roomNumber,
@@ -1676,7 +1693,7 @@ const handleLogin = async (e) => {
                 showMessage('Room updated successfully!', 'success');
             } else { // Add new room
                 // Generate a unique ID for the new room if not provided
-                const newRoomRef = doc(collection(db, `artifacts/${appId}/users/${userId}/rooms`));
+                const newRoomRef = doc(collection(db, `artifacts/${appId}/users/${SHARED_USER_ID}/rooms`));
                 await setDoc(newRoomRef, {
                     roomNumber: roomData.roomNumber,
                     type: roomData.type,
@@ -1710,7 +1727,7 @@ const handleLogin = async (e) => {
 
         if (window.confirm("Are you sure you want to delete this room? This action cannot be undone.")) {
             try {
-                await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/rooms`, roomId));
+                await deleteDoc(doc(db, `artifacts/${appId}/users/${SHARED_USER_ID}/rooms`, roomId));
                 showMessage('Room deleted successfully!', 'success');
             } catch (e) {
                 console.error("Error deleting room:", e);
@@ -1721,7 +1738,7 @@ const handleLogin = async (e) => {
 
     // --- Booking Management Functions ---
    const handleAddOrUpdateBooking = async (bookingData) => {
-    if (!db || !userId) {
+    if (!db) {
         showMessage('Database not ready. Please try again.', 'error');
         return;
     }
@@ -1752,7 +1769,7 @@ const handleLogin = async (e) => {
 
     try {
        if (bookingData.id) {
-    const bookingRef = doc(db, `artifacts/${appId}/users/${userId}/bookings`, bookingData.id);
+    const bookingRef = doc(db, `artifacts/${appId}/users/${SHARED_USER_ID}/bookings`, bookingData.id);
 
     // Fetch all transactions for this booking
     const transactionsRef = collection(bookingRef, 'transactions');
@@ -1775,7 +1792,7 @@ const handleLogin = async (e) => {
     });
     showMessage('Booking updated successfully!', 'success');
 }else {
-            await addDoc(collection(db, `artifacts/${appId}/users/${userId}/bookings`), {
+    await addDoc(collection(db, `artifacts/${appId}/users/${SHARED_USER_ID}/bookings`), {
                 ...bookingData,
                 paxCount: parseInt(bookingData.paxCount),
                 pricePerNight,
@@ -1796,13 +1813,13 @@ const handleLogin = async (e) => {
 };
 
     const handleDeleteBooking = async (bookingId) => {
-        if (!db || !userId) {
+        if (!db) {
             showMessage('Database not ready. Please try again.', 'error');
             return;
         }
         if (window.confirm("Are you sure you want to delete this booking? This action cannot be undone.")) {
             try {
-                await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/bookings`, bookingId));
+                await deleteDoc(doc(db, `artifacts/${appId}/users/${SHARED_USER_ID}/bookings`, bookingId));
                 showMessage('Booking deleted successfully!', 'success');
             } catch (e) {
                 console.error("Error deleting booking:", e);
@@ -1812,12 +1829,12 @@ const handleLogin = async (e) => {
     };
 
     const checkAvailabilityForBooking = async (roomId, checkInDateStr, checkOutDateStr, currentBookingId = null) => {
-        if (!db || !userId) return false;
+        if (!db) return false;
 
         const checkIn = new Date(checkInDateStr);
         const checkOut = new Date(checkOutDateStr);
 
-        const bookingsRef = collection(db, `artifacts/${appId}/users/${userId}/bookings`);
+        const bookingsRef = collection(db, `artifacts/${appId}/users/${SHARED_USER_ID}/bookings`);
         const q = query(bookingsRef, where('roomId', '==', roomId));
         const snapshot = await getDocs(q);
         const conflictingBookings = snapshot.docs.filter(doc => {
@@ -1838,14 +1855,14 @@ const handleLogin = async (e) => {
 
     // Function to handle guest check-in
     const checkInGuest = async (bookingId, roomId) => {
-        if (!db || !userId) {
+        if (!db) {
             showMessage('Database not ready.', 'error');
             return;
         }
 
         try {
-            const bookingRef = doc(db, `artifacts/${appId}/users/${userId}/bookings`, bookingId);
-            const roomRef = doc(db, `artifacts/${appId}/users/${userId}/rooms`, roomId);
+            const bookingRef = doc(db, `artifacts/${appId}/users/${SHARED_USER_ID}/bookings`, bookingId);
+            const roomRef = doc(db, `artifacts/${appId}/users/${SHARED_USER_ID}/rooms`, roomId);
 
             await updateDoc(bookingRef, { status: 'checkedIn', checkedInAt: serverTimestamp() });
             await updateDoc(roomRef, { status: 'occupied' });
@@ -1880,7 +1897,13 @@ const handleLogin = async (e) => {
 
             const roomRef = doc(db, `artifacts/${appId}/users/${userId}/rooms`, roomId);
 
-            await updateDoc(bookingRef, { status: 'checkedOut', checkedOutAt: serverTimestamp() });
+            // Set status, checkedOutAt, and checkOutDate to current hotel date
+            const currentHotelDate = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+            await updateDoc(bookingRef, {
+                status: 'checkedOut',
+                checkedOutAt: serverTimestamp(),
+                checkOutDate: currentHotelDate
+            });
             await updateDoc(roomRef, { status: 'available' }); // Make room available after checkout
             showMessage('Guest checked out successfully!', 'success');
         } catch (e) {
@@ -2399,7 +2422,21 @@ const handleLogin = async (e) => {
     // eslint-disable-next-line
 }, [db, userId, isAuthReady, rooms, bookings, currentHotelDate]);
     // NEW: Fetch Website Bookings in real-time
-   
+    useEffect(() => {
+        if (!db || !isAuthReady) return;
+
+        // Listen to website bookings at the public path
+        const websiteBookingsRef = collection(db, `artifacts/oceanbliss-e0ef5/users/public/webbookings`);
+        const unsubscribe = onSnapshot(websiteBookingsRef, (snapshot) => {
+            const fetchedWebsiteBookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setWebsiteBookings(fetchedWebsiteBookings);
+        }, (error) => {
+            console.error("Error fetching website bookings:", error);
+            showMessage('Error loading website bookings.', 'error');
+        });
+
+        return () => unsubscribe();
+    }, [db, isAuthReady]);
     // Show loading spinner if auth is not ready
     if (!isAuthReady) {
         return (

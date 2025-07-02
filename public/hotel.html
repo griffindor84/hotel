@@ -1357,10 +1357,19 @@ const appId = "oceanbliss-e0ef5"; // Use your actual projectId as appId
 
         if (!isAvailable) {
             showMessage('Booking not submitted: Room is not available for the selected dates.', 'error', messageBox);
+            hideLoading();
             return;
         }
 
-        // Proceed with booking submission if available
+        // Ask user if they want to proceed with booking
+        const confirmBooking = window.confirm('Room is available! Would you like to submit your booking request now?');
+        if (!confirmBooking) {
+            hideLoading();
+            showMessage('Booking not submitted. You can adjust your details and try again.', 'error', messageBox);
+            return;
+        }
+
+        // Proceed with booking submission if available and confirmed
         const guestName = document.getElementById('guest-name').value;
         const guestEmail = document.getElementById('guest-email').value;
         const checkInDate = document.getElementById('check-in-date').value;
@@ -1383,7 +1392,6 @@ const appId = "oceanbliss-e0ef5"; // Use your actual projectId as appId
 
         showMessage('Your booking request has been submitted successfully! We will contact you soon.', 'success', messageBox);
         bookingForm.reset();
-        // clearMessages(); <-- REMOVE THIS LINE
     } catch (e) {
         console.error("Error submitting website booking: ", e);
         showMessage('Failed to submit booking. Please try again.', 'error', messageBox);
