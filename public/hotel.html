@@ -1137,7 +1137,10 @@
                 </div>
             </div>
         </div>
-        <div> <a href="/dashboard" class="btn nav__btn" style="margin-left: 1rem;">Admin Dashboard</a></div>
+        <!-- Subtle dashboard link: small floating icon at bottom right -->
+        <a href="/dashboard" title="Admin Login" style="position:fixed;bottom:18px;right:18px;z-index:1100;opacity:0.5;transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">
+            <img src="assets/logo.png" alt="Admin Dashboard" style="width:38px;height:38px;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.12);background:#fff;padding:4px;" />
+        </a>
         <div class="footer__bar">
             Copyright © 2025 Ocean Bliss Hotel. All rights reserved.
         </div>
