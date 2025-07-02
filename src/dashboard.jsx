@@ -2267,16 +2267,7 @@ const handleLogin = async (e) => {
     const initializeData = async () => {
         if (!db || !userId) return;
 
-        const roomsRef = collection(db, `artifacts/${appId}/users/${userId}/rooms`);
-        const roomsSnapshot = await getDocs(roomsRef);
-        const roomData = roomsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setRooms(roomData); // ✅ Load into state
-
-        if (roomData.length === 0) {
-            console.log("No rooms found.");
-            // Optionally initialize default rooms here
-        }
-
+        // Only initialize hotel settings if not present, but DO NOT clear or re-initialize rooms/bookings
         const settingsRef = doc(db, `artifacts/${appId}/users/${userId}/hotel_settings`, 'settings');
         const settingsSnap = await getDocs(query(collection(db, `artifacts/${appId}/users/${userId}/hotel_settings`)));
         if (settingsSnap.empty) {
@@ -2287,6 +2278,7 @@ const handleLogin = async (e) => {
             });
             console.log("Hotel settings initialized.");
         }
+        // Do NOT auto-initialize or clear rooms/bookings here!
     };
 
     if (isAuthReady) {
@@ -2682,22 +2674,22 @@ if (userRole !== "receptionist" && userRole !== "finance" && userRole !== "admin
                 {currentView === 'websiteBookings' && <WebsiteBookingsManagement websiteBookings={websiteBookings} handleAcceptWebsiteBooking={handleAcceptWebsiteBooking} handleRejectWebsiteBooking={handleRejectWebsiteBooking} />}
 
       {currentView === 'reports' && (
-    userRole === "finance" && userRole !== "admin" ? (
-        <ReportsManagement
-            dailySummaries={dailySummaries}
-            currentHotelDate={currentHotelDate}
-            cityLedgerBalance={cityLedgerBalance}
-            earningsOfTheDay={earningsOfTheDay}
-            handleEndOfDayProcess={handleEndOfDayProcess}
-            isProcessingEndOfDay={isProcessingEndOfDay}
-            onShowCityLedger={handleShowCityLedger}
-        />
-    ) : (
-        <div style={{ color: "#dc2626", fontWeight: "bold", fontSize: "1.25rem", padding: "2rem" }}>
-            Only finance staff can access reports.
-        </div>
-    )
-)}
+        (userRole === "finance" || userRole === "admin") ? (
+            <ReportsManagement
+                dailySummaries={dailySummaries}
+                currentHotelDate={currentHotelDate}
+                cityLedgerBalance={cityLedgerBalance}
+                earningsOfTheDay={earningsOfTheDay}
+                handleEndOfDayProcess={handleEndOfDayProcess}
+                isProcessingEndOfDay={isProcessingEndOfDay}
+                onShowCityLedger={handleShowCityLedger}
+            />
+        ) : (
+            <div style={{ color: "#dc2626", fontWeight: "bold", fontSize: "1.25rem", padding: "2rem" }}>
+                Only finance staff can access reports.
+            </div>
+        )
+      )}
 {currentView === 'admin' && userRole === 'admin' && <AdminPanel />}
 
 
