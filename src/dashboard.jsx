@@ -2688,6 +2688,24 @@ if (userRole !== "receptionist" && userRole !== "finance" && userRole !== "admin
                         </button>
                     </li>
                     <li style={{ marginBottom: '0.5rem' }}>
+  <button
+    onClick={() => setCurrentView('roomStatusMatrix')}
+    style={{
+      width: '100%',
+      textAlign: 'left',
+      padding: '0.5rem 1rem',
+      borderRadius: '0.375rem',
+      border: 'none',
+      cursor: 'pointer',
+      backgroundColor: currentView === 'roomStatusMatrix' ? '#1c5eab' : 'transparent',
+      color: '#fff',
+      transition: 'background-color 0.2s'
+    }}
+  >
+    Room Status Matrix
+  </button>
+</li>
+                    <li style={{ marginBottom: '0.5rem' }}>
                         <button
                             onClick={() => setCurrentView('websiteBookings')}
                             style={{
@@ -2809,6 +2827,9 @@ if (userRole !== "receptionist" && userRole !== "finance" && userRole !== "admin
                     checkOutGuest={checkOutGuest}
                     generateInvoice={generateInvoice}
                 />}
+                {currentView === 'roomStatusMatrix' && (
+  <RoomStatusMatrix rooms={rooms} bookings={bookings} />
+)}
                 {currentView === 'websiteBookings' && <WebsiteBookingsManagement websiteBookings={websiteBookings} handleAcceptWebsiteBooking={handleAcceptWebsiteBooking} handleRejectWebsiteBooking={handleRejectWebsiteBooking} />}
 
       {currentView === 'reports' && (
