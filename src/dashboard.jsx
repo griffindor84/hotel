@@ -1566,7 +1566,108 @@ const CityLedgerModal = ({ transactions, onClose }) => {
         </div>
     );
 };
+// Room Status Matrix Report
+const RoomStatusMatrix = ({ rooms, bookings }) => {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [matrix, setMatrix] = useState(null);
 
+  // Generate date array between start and end
+  const getDateRange = (start, end) => {
+    const dates = [];
+    let current = new Date(start);
+    const last = new Date(end);
+    while (current <= last) {
+      dates.push(current.toISOString().slice(0, 10));
+      current.setDate(current.getDate() + 1);
+    }
+    return dates;
+  };
+
+  const generateMatrix = () => {
+    if (!startDate || !endDate) return;
+    const days = getDateRange(startDate, endDate);
+
+    const roomRows = rooms
+      .slice(0, 10) // Only show top 10 rooms
+      .map(room => {
+        const statusByDay = days.map(day => {
+          // Find if room has booking for this day
+          const booking = bookings.find(b =>
+            b.roomId === room.id &&
+            new Date(b.checkInDate) <= new Date(day) &&
+            new Date(b.checkOutDate) > new Date(day) &&
+            (b.status === 'confirmed' || b.status === 'checkedIn')
+          );
+          if (booking) return 'occupied';
+          if (room.status === 'maintenance') return 'maintenance';
+          return 'available';
+        });
+        return { room, statusByDay };
+      });
+    setMatrix({ days, roomRows });
+  };
+
+  return (
+    <div style={{ background: '#fff', borderRadius: 8, padding: 24, boxShadow: '0 2px 8px #0001' }}>
+      <h2 style={{ marginBottom: 16 }}>Room Status Matrix</h2>
+      <div style={{ marginBottom: 16, display: 'flex', gap: 8 }}>
+        <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+        <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+        <button
+          onClick={generateMatrix}
+          style={{ background: '#2563eb', color: '#fff', border: 'none', borderRadius: 4, padding: '0.5rem 1rem', cursor: 'pointer' }}
+          disabled={!startDate || !endDate}
+        >
+          Generate
+        </button>
+      </div>
+      {matrix && (
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ borderCollapse: 'collapse', minWidth: 600 }}>
+            <thead>
+              <tr>
+                <th style={{ padding: 8, background: '#eef', border: '1px solid #ccc', position: 'sticky', left: 0, backgroundClip: 'padding-box' }}>Room</th>
+                {matrix.days.map(day => (
+                  <th key={day} style={{ padding: 8, background: '#eef', border: '1px solid #ccc', minWidth: 90 }}>{day}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {matrix.roomRows.map(({ room, statusByDay }) => (
+                <tr key={room.id}>
+                  <td style={{ padding: 8, border: '1px solid #ccc', fontWeight: 'bold', background: '#f7fafc', position: 'sticky', left: 0, backgroundClip: 'padding-box' }}>
+                    {room.roomNumber} ({room.type})
+                  </td>
+                  {statusByDay.map((status, idx) => (
+                    <td
+                      key={idx}
+                      style={{
+                        padding: 8,
+                        border: '1px solid #ccc',
+                        background:
+                          status === 'occupied' ? '#fee2e2' :
+                          status === 'maintenance' ? '#fef9c3' : '#d1fae5',
+                        color:
+                          status === 'occupied' ? '#b91c1c' :
+                          status === 'maintenance' ? '#b45309' : '#065f46',
+                        textAlign: 'center',
+                        fontWeight: 500
+                      }}
+                    >
+                      {status}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <p style={{ color: '#888', marginTop: 12, fontSize: 13 }}>Shows top 10 rooms. Status: <span style={{color:'#b91c1c'}}>occupied</span>, <span style={{color:'#065f46'}}>available</span>, <span style={{color:'#b45309'}}>maintenance</span></p>
+    </div>
+  );
+};
 // Main App Component
 const App = () => {
     const { db, userId, isAuthReady , auth } = useAppContext();
